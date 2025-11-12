@@ -27,12 +27,18 @@ static void packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packe
     UNUSED(size);
     UNUSED(channel);
     bd_addr_t local_addr;
+    uint8_t num_connections;
+    printf("Handler\n");
     if (packet_type != HCI_EVENT_PACKET) return;
     switch(hci_event_packet_get_type(packet)){
         case BTSTACK_EVENT_STATE:
             if (btstack_event_state_get_state(packet) != HCI_STATE_WORKING) return;
             gap_local_bd_addr(local_addr);
             printf("BTstack up and running on %s.\n", bd_addr_to_str(local_addr));
+            break;
+        case BTSTACK_EVENT_NR_CONNECTIONS_CHANGED:
+            num_connections = btstack_event_nr_connections_changed_get_number_connections(packet);
+            printf("The number of Bluetooth connections has changed to %d.\n", num_connections);
             break;
         default:
             break;
